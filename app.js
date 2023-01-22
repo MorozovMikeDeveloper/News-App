@@ -55,9 +55,38 @@ function customHttp() {
   };
 }
 
-let http = customHttp();
+const http = customHttp();
+
+const newsService = (function () {
+  const apiKey = "cf47a6987f2d4aa2978450c44eb2f150";
+  const apiUrl = "https://newsapi.org/v2";
+
+  return {
+    topHeadlines(country = "ru", cb) {
+      http.get(
+        `${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`,
+        cb
+      );
+    },
+    everything(query, cb) {
+      http.get(`${apiUrl}/everything?q=${query}&apiKey=${apiKey}`, cb);
+    },
+  };
+})();
 
 // init selects
 document.addEventListener("DOMContentLoaded", () => {
   M.AutoInit();
+  loadNews();
 });
+
+// Load news function
+
+function loadNews() {
+  newsService.topHeadlines("ru", onGetResponse);
+}
+
+// On get response from server function
+function onGetResponse(err, res) {
+  console.log(res);
+}
