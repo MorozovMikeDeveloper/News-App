@@ -74,6 +74,16 @@ const newsService = (function () {
   };
 })();
 
+// Elements
+const form = document.forms["newsControls"];
+const countrySelect = form.elements["country"];
+const searchInput = form.elements["search"];
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  loadNews();
+});
+
 // init selects
 document.addEventListener("DOMContentLoaded", () => {
   M.AutoInit();
@@ -81,40 +91,70 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Load news function
-
 function loadNews() {
-  newsService.topHeadlines("ru", onGetResponse);
+  showLoader();
+  const country = countrySelect.value;
+  const searchText = searchInput.value;
+
+  if (!searchText) {
+    newsService.topHeadlines(country, onGetResponse);
+  } else {
+    newsService.everything(searchText, onGetResponse);
+  }
 }
 
 // On get response from server function
 function onGetResponse(err, res) {
+  removeLoader();
+  if (err) {
+    showAlert(err, "error-msg");
+    return;
+  }
+
+  if (!res.articles.length) {
+    // show empty message
+    return;
+  }
   renderNews(res.articles);
 }
 
 // Render news
 function renderNews(news) {
   const newsContainer = document.querySelector(".news-container .row");
-  let fragment = '';
+  if (newsContainer.children.length) {
+    clearContainer(newsContainer);
+  }
+  let fragment = "";
 
-  news.forEach(newsItem => {
+  news.forEach((newsItem) => {
     const el = newsTemplate(newsItem);
     fragment += el;
   });
 
-  newsContainer.insertAdjacentHTML('afterbegin', fragment);
+  newsContainer.insertAdjacentHTML("afterbegin", fragment);
+}
+
+// Clear container
+function clearContainer(container) {
+  let child = container.lastElementChild;
+
+  while (child) {
+    container.removeChild(child);
+    child = container.lastElementChild;
+  }
 }
 
 // News item templeate
-function newsTemplate({ urlToImage, title, url, description}) {
+function newsTemplate({ urlToImage, title, url, description }) {
   return `
     <div class="col s12">
         <div class="card">
             <div class="card-image">
-                <img src="${urlToImage}">
-                <span class="card-title">${title || ''}</span>
+                <img class="materialboxed" src="${urlToImage || "https://via.placeholder.com/695x390/04B4AE/E0F6FD?text=There is no picture"}">
+                <span class="card-title">${title || ""}</span>
             </div>
             <div class="card-content">
-                <p>${description || ''}</p>
+                <p>${description || ""}</p>
             </div>
             <div class="card-action">
                 <a href="${url}">Read more</a>
@@ -122,4 +162,29 @@ function newsTemplate({ urlToImage, title, url, description}) {
         </div>
     </div>
   `;
+}
+
+// Show alert
+function showAlert(msg, type = "success") {
+  M.toast({ html: msg, classess: type });
+}
+
+// Show loader
+function showLoader() {
+  document.body.insertAdjacentHTML(
+    "afterbegin",
+    `
+    <div class="progress">
+      <div class="indeterminate"></div>
+    </div>
+    `
+  );
+}
+
+// Remove Loader
+function removeLoader() {
+  const loader = document.querySelector(".progress");
+  if (loader) {
+    loader.remove();
+  }
 }
