@@ -58,18 +58,17 @@ function customHttp() {
 const http = customHttp();
 
 const newsService = (function () {
-  const apiKey = "cf47a6987f2d4aa2978450c44eb2f150";
-  const apiUrl = "https://newsapi.org/v2";
+  // const apiKey = "cf47a6987f2d4aa2978450c44eb2f150"; // For newsapi.org
+  const token = "d02c0fb045c5f4f7667cfa4cc9db2563"; // For gnews.io
+  // const apiUrl = "https://newsapi.org/v2";
+  const apiUrl = "https://gnews.io/api/v4/";
 
   return {
     topHeadlines(country = "ru", cb) {
-      http.get(
-        `${apiUrl}/top-headlines?country=${country}&apiKey=${apiKey}`,
-        cb
-      );
+      http.get(`${apiUrl}/top-headlines?country=${country}&token=${token}`, cb);
     },
     everything(query, cb) {
-      http.get(`${apiUrl}/everything?q=${query}&apiKey=${apiKey}`, cb);
+      http.get(`${apiUrl}/search?q=${query}&token=${token}`, cb);
     },
   };
 })();
@@ -145,21 +144,24 @@ function clearContainer(container) {
 }
 
 // News item templeate
-function newsTemplate({ urlToImage, title, url, description }) {
+function newsTemplate({ image, title, url, description }) {
   return `
     <div class="col s12">
-        <div class="card">
-            <div class="card-image">
-                <img class="materialboxed" src="${urlToImage || "https://via.placeholder.com/695x390/04B4AE/E0F6FD?text=There is no picture"}">
-                <span class="card-title">${title || ""}</span>
-            </div>
-            <div class="card-content">
-                <p>${description || ""}</p>
-            </div>
-            <div class="card-action">
-                <a href="${url}">Read more</a>
-            </div>
+      <div class="card large">
+        <div class="card-image waves-effect waves-block waves-light">
+          <img class="activator" src="${ image || "https://via.placeholder.com/695x390/04B4AE/E0F6FD?text=There is no picture" }">
         </div>
+        <div class="card-content">
+          <span class="card-title activator grey-text text-darken-4">${title || ""}<iclass="material-icons right">more_vert</iclass=></span>
+        </div>
+        <div class="card-reveal">
+          <span class="card-title grey-text text-darken-4">${title || ""}<i class="material-icons right">close</i></span>
+          <p>${description || ""}</p>
+        </div>
+        <div class="card-action">
+          <p><a href="${url}">Read more</a></p>
+        </div>
+      </div>
     </div>
   `;
 }
