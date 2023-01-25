@@ -152,7 +152,7 @@ function newsTemplate({ image, title, url, description }) {
           <img class="activator" src="${ image || "https://via.placeholder.com/695x390/04B4AE/E0F6FD?text=There is no picture" }">
         </div>
         <div class="card-content">
-          <span class="card-title activator grey-text text-darken-4">${title || ""}<iclass="material-icons right">more_vert</iclass=></span>
+          <span class="card-title activator grey-text text-darken-4">${title || ""}<i class="material-icons right">more_vert</i></span>
         </div>
         <div class="card-reveal">
           <span class="card-title grey-text text-darken-4">${title || ""}<i class="material-icons right">close</i></span>
